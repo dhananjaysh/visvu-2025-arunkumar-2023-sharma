@@ -18,7 +18,7 @@ except ImportError:
     print("Please install missing packages: pip install openai rouge-score")
     sys.exit(1)
 
-API_KEY = "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" 
+API_KEY = "sk-or-v1-4253b0b46c30d1c867af2056c20d893058ef2236437731bff37261cc832d4c" 
 
 API_BASE = "https://openrouter.ai/api/v1"
 
