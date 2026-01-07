@@ -1,0 +1,373 @@
+/**
+ * LINGO Dashboard Styles
+ * Matches the paper's visual design
+ */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f5f5;
+    color: #333;
+    overflow: hidden;
+}
+
+/* Dashboard Layout */
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 10px;
+    gap: 10px;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+}
+
+.row-top {
+    flex: 0 0 60%;
+    min-height: 0;
+}
+
+.row-bottom {
+    flex: 0 0 40%;
+    min-height: 0;
+}
+
+/* Panel Base Styles */
+.panel {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.panel-header {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 36px;
+}
+
+.panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.panel-label {
+    background: #2c3e50;
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.panel-subheader {
+    padding: 6px 12px;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+}
+
+.panel-controls select,
+.panel-subheader select {
+    font-size: 11px;
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #fff;
+}
+
+.panel-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Panel Sizes */
+.panel-a {
+    flex: 40;
+}
+
+.panel-c {
+    flex: 30;
+}
+
+.panel-e {
+    flex: 30;
+}
+
+.panel-b {
+    flex: 39.5;
+}
+
+.panel-d {
+    flex: 60.5;
+}
+
+/* Panel A: Overview */
+.info-box {
+    padding: 10px 12px;
+    background: #fafafa;
+    border-top: 1px solid #eee;
+    font-size: 11px;
+}
+
+.info-row {
+    margin-bottom: 4px;
+    font-style: italic;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #666;
+}
+
+.info-divider {
+    margin: 0 8px;
+    color: #ccc;
+}
+
+.info-definition {
+    color: #555;
+    line-height: 1.4;
+    max-height: 40px;
+    overflow: hidden;
+}
+
+/* Panel B: Correlation */
+.panel-content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.network-container {
+    flex: 1;
+    min-height: 180px;
+}
+
+.comparison-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 6px;
+    background: #f9f9f9;
+    border-left: 1px solid #eee;
+    max-width: 200px;
+    min-width: 180px;
+}
+
+.comparison-box {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.comparison-tabs {
+    display: flex;
+    background: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 6px 4px;
+    font-size: 9px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    background: #e0e0e0;
+}
+
+.tab-btn.active {
+    background: #fff;
+    color: #333;
+    font-weight: 600;
+    border-bottom: 2px solid #3498db;
+}
+
+.comparison-content {
+    padding: 8px;
+    font-size: 11px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.threshold-control {
+    padding: 8px 12px;
+    background: #fafafa;
+    border-top: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+}
+
+.threshold-control input[type="number"] {
+    width: 60px;
+    padding: 4px 6px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.threshold-control input[type="range"] {
+    flex: 1;
+    max-width: 100px;
+}
+
+/* Panel D: Beeswarm */
+.beeswarm-wrapper {
+    flex-direction: row !important;
+}
+
+.beeswarm-main {
+    flex: 3;
+}
+
+.beeswarm-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+    background: #fafafa;
+    border-left: 1px solid #eee;
+    max-width: 180px;
+}
+
+.side-panel {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.side-label {
+    background: #f0f0f0;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+}
+
+.side-content {
+    padding: 6px;
+    font-size: 10px;
+    color: #666;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+/* Panel E: Bias Metrics */
+.bias-content {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.bias-heatmap {
+    flex: 2;
+}
+
+.bias-barchart {
+    flex: 1;
+}
+
+/* Tooltip */
+.tooltip {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 10000;
+    max-width: 280px;
+    line-height: 1.4;
+}
+
+.tooltip.visible {
+    opacity: 1;
+}
+
+/* Placeholder text */
+.placeholder {
+    color: #999;
+    text-align: center;
+    padding: 40px 20px;
+    font-style: italic;
+}
+
+/* Network link styles */
+.network-link {
+    stroke: #999;
+    stroke-opacity: 0.6;
+}
+
+/* Task point styles */
+.task-point {
+    transition: opacity 0.2s;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+/* ADD AT THE END OF style.css */
+#scatter-plot, #network-graph, #beeswarm-plot, .beeswarm-main, .network-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden !important; /* Forces content to be cut off if it's too big */
+    position: relative;
+    min-height: 0; /* Prevents flexbox from forcing growth */
+    min-width: 0;
+}

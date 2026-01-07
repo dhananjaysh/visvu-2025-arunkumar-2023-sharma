@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINGO: Visually Debiasing NL Instructions</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- Row 1 -->
+    <div class="row row-top">
+        <!-- Panel A: Overview -->
+        <div class="panel panel-a">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="panel-label">A</span>
+                    Overview
+                </div>
+                <div class="panel-controls">
+                    <select id="color-by-select">
+                        <option value="category">Task Type</option>
+                        <option value="source_dataset">Source Dataset</option>
+                    </select>
+                </div>
+            </div>
+            <div class="panel-content" id="scatter-plot"></div>
+            <div class="info-box">
+                <div class="info-row">
+                    <span class="info-label">Source:</span>
+                    <span id="info-source">-</span>
+                    <span class="info-divider">|</span>
+                    <span class="info-label">Type:</span>
+                    <span id="info-type">-</span>
+                    <span class="info-divider">|</span>
+                    <span class="info-label">Domain:</span>
+                    <span id="info-domain">-</span>
+                </div>
+                <div id="info-definition" class="info-definition">Definition: Hover over a task to see details</div>
+            </div>
+        </div>
+
+        <!-- Panel C: Instruction Decomposition (Chord) -->
+        <div class="panel panel-c">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="panel-label">C</span>
+                    Instruction Decomposition
+                </div>
+                <div class="panel-controls">
+                    <select id="chord-metric-select">
+                        <option value="word_overlap">Normalized Word Overlap</option>
+                        <option value="length">Normalized Length</option>
+                    </select>
+                </div>
+            </div>
+            <div class="panel-subheader">
+                <select id="chord-component-select">
+                    <option value="definition">Definition</option>
+                    <option value="positive_examples">Positive Examples</option>
+                    <option value="negative_examples">Negative Examples</option>
+                    
+                </select>
+            </div>
+            <div class="panel-content" id="chord-diagram"></div>
+            <div class="threshold-control">
+                <span>Chord Threshold</span>
+                <input type="number" id="chord-threshold-input" value="0.6" min="0" max="1" step="0.1">
+            </div>
+        </div>
+
+        <!-- Panel E: Bias Metrics -->
+        <div class="panel panel-e">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="panel-label">E</span>
+                    Bias Metrics
+                </div>
+            </div>
+            <div class="panel-subheader">
+                <select id="bias-component-select">
+                    <option value="definition">Definition</option>
+                    <option value="positive_examples">Positive Examples</option>
+                    <option value="negative_examples">Negative Examples</option>
+                    
+                </select>
+                <select id="bias-metric-select">
+                    <option value="jaccard_adverbs">Jaccard Similarity - Adverbs</option>
+                    <option value="jaccard_nouns">Jaccard Similarity - Nouns</option>
+                    <option value="unique_vocab">Unique Vocabulary</option>
+                </select>
+            </div>
+            <div class="panel-content bias-content">
+                <div id="heatmap" class="bias-heatmap"></div>
+                <div id="bar-chart" class="bias-barchart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="row row-bottom">
+        <!-- Panel B: Correlation -->
+        <div class="panel panel-b">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="panel-label">B</span>
+                    Correlation
+                </div>
+            </div>
+            <div class="panel-content-wrapper">
+                <div class="network-container" id="network-graph"></div>
+                <div class="comparison-container">
+                    <div class="comparison-box" id="comparison-box-1">
+                        <div class="comparison-tabs">
+                            <button class="tab-btn active" data-tab="definition">Definition</button>
+                            <button class="tab-btn" data-tab="positive">Positive Example</button>
+                            <button class="tab-btn" data-tab="negative">Negative Example</button>
+                        </div>
+                        <div class="comparison-content" id="comparison-content-1">
+                            <p class="placeholder">Select a task</p>
+                        </div>
+                    </div>
+                    <div class="comparison-box" id="comparison-box-2">
+                        <div class="comparison-tabs">
+                            <button class="tab-btn active" data-tab="definition">Definition</button>
+                            <button class="tab-btn" data-tab="positive">Positive Example</button>
+                            <button class="tab-btn" data-tab="negative">Negative Example</button>
+                        </div>
+                        <div class="comparison-content" id="comparison-content-2">
+                            <p class="placeholder">Select a task</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="threshold-control">
+                <span>Link Threshold</span>
+                <input type="number" id="link-threshold" value="0.7" min="0.5" max="0.95" step="0.05">
+                <span id="link-threshold-value">0.7</span>
+            </div>
+        </div>
+
+        <!-- Panel D: Model Results -->
+        <div class="panel panel-d">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="panel-label">D</span>
+                    Model Results
+                </div>
+                <div class="panel-controls">
+                    
+                </div>
+            </div>
+            <div class="panel-content-wrapper beeswarm-wrapper">
+                <div class="beeswarm-main" id="beeswarm-plot"></div>
+                <div class="beeswarm-side">
+                    <div class="side-panel" id="examples-panel">
+                        <div class="side-label">Examples</div>
+                        <div class="side-content">Hover over a point</div>
+                    </div>
+                    <div class="side-panel" id="instances-panel">
+                        <div class="side-label">Instances</div>
+                        <div class="side-content">Hover over a point</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tooltip -->
+<div id="tooltip" class="tooltip"></div>
+
+<!-- Scripts (order matters) -->
+<script src="config.js"></script>
+<script src="overview.js"></script>
+<script src="correlation.js"></script>
+<script src="chord.js"></script>
+<script src="beeswarm.js"></script>
+<script src="bias.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>

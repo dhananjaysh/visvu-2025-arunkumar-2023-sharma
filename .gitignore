@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dataset - DON'T COMMIT THESE!
+data/full_dataset/
+data/*.json
+data/*.csv
+data/*.parquet
+data/*.arrow
+!data/sample_tasks.json
+
+# HuggingFace cache
+.cache/
+**/.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.logdata/tasks/
