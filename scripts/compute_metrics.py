@@ -1,8 +1,6 @@
 """
 Computes metrics for LINGO panels using OpenRouter.ai (Free Gemini Model).
-Runs strictly on the Target Cluster (10 tasks) to verify the pipeline.
 
-Usage: python scripts/compute_metrics.py
 """
 
 import json
