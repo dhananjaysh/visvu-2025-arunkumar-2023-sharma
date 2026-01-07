@@ -1,4 +1,4 @@
- """
+"""
 Computes pairwise cosine similarities between task embeddings.
 Generates: processed/similarities.json
 """

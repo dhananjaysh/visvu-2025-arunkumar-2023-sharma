@@ -1,93 +1,224 @@
-# visvu-2025-Arunkumar-2023-Sharma
+# LINGO: Visually Debiasing Natural Language Instructions
 
+**Student**: Dhananjay Sharma  
+**Matriculation Number**: 12230006  
+**Course**: VU Visualisierung (193.166)   
+**Semester**: Winter 2025/26
 
+---
+## Project Overview
 
-## Getting started
+This project reimplements the **LINGO visualization system** from the paper:
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+> Arunkumar, A., et al. (2023). "LINGO: Visually Debiasing Natural Language Instructions to Support Task Diversity." *Computer Graphics Forum (EuroVis 2023)*, 42(3), 409-421.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+LINGO is an interactive visual analytics tool designed to identify and reduce bias in natural language task instructions used for evaluating large language models (LLMs). The system helps researchers understand how instruction wording affects model performance and task diversity.
 
-## Add your files
+---
+## Features Implemented
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+This implementation includes all five interactive visualization panels from the original paper:
 
+### **Panel A: Overview (3D Sphere Projection)**
+- Displays 1,616+ NLP task instructions as interactive points on a rotatable 3D sphere
+- Uses t-SNE dimensionality reduction for 3D coordinate generation
+- Color-coded visualization:
+  - **Before selection**: Colored by task category or source dataset
+  - **After selection**: T1 (selected task) = RED, T2-T10 (similar tasks) = BLUE gradient, unrelated tasks = GREY
+- Interactive rotation via mouse drag
+- Depth-based opacity for realistic 3D effect
+
+### **Panel B: Correlation (Node-Link Diagram)**
+- Shows similarity network between selected task (T1) and its 9 most similar tasks (T2-T10)
+- **Circular layout**: T1 positioned at center, similar tasks arranged in a circle
+- **Distance-based positioning**: Higher similarity = closer to center
+- **Link thickness**: Represents similarity strength (thicker = more similar)
+- **Interactive comparison boxes**: Side-by-side task comparison with tabbed views
+  - Definition tab
+  - Positive Examples tab
+  - Negative Examples tab
+- Adjustable similarity threshold (0.5 - 0.95)
+
+### **Panel C: Instruction Decomposition (Chord Diagram)**
+- Visualizes word overlap between task instruction components
+- **Selectable components**:
+  - Task Definition
+  - Positive Examples
+  - Negative Examples
+- Chord thickness represents overlap strength
+- Adjustable threshold to filter low-overlap connections
+- Color scheme: T1 = RED, T2-T10 = BLUE gradient
+
+### **Panel D: Model Results (Beeswarm Plot)**
+- Displays model accuracy on task instances grouped by similarity bins
+- **X-axis**: Tasks T1-T10
+- **Y-axis**: Bin-wise accuracy (0-1)
+- **Point size**: Number of instances in each similarity bin
+- **20 similarity bins**: Groups instances by similarity to instruction examples
+- **Side panels**: Show examples and instances on hover
+- Reveals instruction bias patterns (top-heavy distribution = high bias)
+
+### **Panel E: Bias Metrics**
+- **Heatmap**: Jaccard similarity matrix between task examples and instances
+- **Bar Chart**: Unique vocabulary contribution per task
+- **Three bias metrics**:
+  - Jaccard Similarity - Adverbs (most important for bias detection)
+  - Jaccard Similarity - Nouns
+  - Unique Vocabulary
+- **Selectable components**: Definition, Positive Examples, Negative Examples
+- Helps identify which tasks have low linguistic diversity
+
+---
+
+## Tech Stack
+
+### Backend
+- **Python 3.8+**
+- **Flask**: REST API server
+- **Sentence-Transformers**: Generate sentence embeddings for task instructions
+- **scikit-learn**: t-SNE for 3D dimensionality reduction
+- **NLTK**: Text preprocessing, tokenization, POS tagging
+- **NumPy & Pandas**: Data processing and numerical operations
+
+### Frontend
+- **HTML5, CSS3, JavaScript (ES5)**
+- **D3.js v7**: All interactive visualizations
+- Responsive flexbox layout
+- No external UI frameworks (pure D3.js implementation)
+
+### Dataset
+- **SUP-NATINST** (Super-Natural Instructions)
+- **Source**: GitHub repository (big-science-workshop/lm-evaluation-harness)
+- **Size**: 1,616 NLP tasks with complete instruction schemas
+- **Coverage**: 76 task categories, 55 languages (576 non-English tasks)
+- Each task includes:
+  - Task definition
+  - Positive examples (with explanations)
+  - Negative examples (with explanations)
+  - Task instances for evaluation
+
+## Data Setup
+
+**Note**: Due to size constraints (3.3GB raw, 800MB processed), data files are NOT included in this repository.
+
+### Getting the Data
+
+1. **Download the dataset**:
+   - Download SUP-NATINST from: https://github.com/allenai/natural-instructions/archive/refs/heads/master.zip
+   - We only need tasks folder as it contains the data
+   - Place in `data/` directory
+
+2. **Run the processing scripts**:
+```bash
+   python scripts/process_data.py
+   python scripts/comute_tsne.py
+   python scripts/comute_metrics.py
+   python scripts/comute_similarities.py
+   python scripts/create_final_data.py
+   python scripts/generate_embeddings.py
 ```
-cd existing_repo
-git remote add origin https://gitlab.tuwien.ac.at/e193-02-visvu-students/visvu-2025-arunkumar-2023-sharma.git
-git branch -M main
-git push -uf origin main
+   This will generate all necessary processed data files (~800MB)
+
+   - Run all the scripts in the scripts as they required for running visualization panels
+
+3. **Start the application**:
+```bash
+   python app.py
 ```
 
-## Integrate with your tools
+## Usage Guide
 
-- [ ] [Set up project integrations](https://gitlab.tuwien.ac.at/e193-02-visvu-students/visvu-2025-arunkumar-2023-sharma/-/settings/integrations)
+### Selecting a Task
 
-## Collaborate with your team
+1. **Panel A (Overview)**: Click any point on the 3D sphere to select a task
+2. The selected task (T1) turns RED
+3. The 9 most similar tasks (T2-T10) appear in BLUE gradient
+4. All other tasks turn GREY
+5. You can rotate the sphere by clicking and dragging
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### Exploring Task Similarity
 
-## Test and Deploy
+1. **Panel B (Correlation)**: View the network diagram
+   - T1 is at the center
+   - Similar tasks arranged in a circle (closer = more similar)
+   - Click nodes or links to compare tasks
+   - Use the comparison boxes to view definitions and examples
+   - Adjust the "Link Threshold" to filter connections
 
-Use the built-in continuous integration in GitLab.
+### Analyzing Instruction Components
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+1. **Panel C (Chord Diagram)**: 
+   - Select component: Definition, Positive Examples, or Negative Examples
+   - Thicker chords = higher word overlap
+   - Adjust "Chord Threshold" to filter weak connections
+   - Click chords to compare tasks in Panel B
 
-***
+### Viewing Model Performance
 
-# Editing this README
+1. **Panel D (Beeswarm)**: 
+   - Each column represents a task (T1-T10)
+   - Vertical position = accuracy
+   - Point size = number of instances in that similarity bin
+   - Hover over points to see examples and instances
+   - Top-heavy distribution = high bias (model memorizing examples)
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### Identifying Bias
 
-## Suggestions for a good README
+1. **Panel E (Bias Metrics)**:
+   - **Jaccard Similarity - Adverbs**: Most important metric
+     - High similarity (dark colors) = LOW diversity = BIAS
+     - Adverbs indicate text complexity
+   - **Unique Vocabulary**: Higher values = more diversity
+   - Select different components to analyze different parts of instructions
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+---
 
-## Name
-Choose a self-explaining name for your project.
+## Key Implementation Details
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+### 3D Sphere Projection
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+- Task instructions converted to 512-dimensional embeddings using Sentence-Transformers
+- t-SNE reduces to 3D coordinates while preserving local structure
+- Points normalized to unit sphere surface
+- Orthographic projection for 2D rendering
+- Interactive rotation using D3.js drag behavior
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### Similarity Calculation
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+- **Cosine similarity** between sentence embeddings for task-to-task similarity
+- **Jaccard similarity** for component-level word overlap
+- Threshold-based filtering to show only meaningful connections
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Bias Metrics Implementation
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- **Jaccard Similarity (Adverbs)**: Extracts adverbs using pattern matching (words ending in "-ly" + common adverbs list)
+- **Jaccard Similarity (Nouns)**: Filters out verbs and adverbs using common word lists
+- **Unique Vocabulary**: Counts unique words (length > 2) in instruction components
+- Simplified POS tagging (no external NLP library for performance)
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+---
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Known Limitations
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+1. **Synthetic Model Results**: Uses randomly generated accuracy scores (GPT-3 API access not available for this project)
+2. **Simplified POS Tagging**: Uses heuristic-based approach instead of proper NLP library (spaCy/NLTK taggers)
+3. **No Real-time Instruction Modification**: Original LINGO paper includes live instruction editing with model re-evaluation
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Screenshot
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+### Full Dashboard
+![Full Dashboard](screenshots/full-dashboard.jpeg)
 
-## License
-For open source projects, say how it is licensed.
+## References
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+### Original Paper
+Arunkumar, A., Sharma, S., Agrawal, R., Chandrasekaran, S., & Bryan, C. (2023). LINGO: Visually Debiasing Natural Language Instructions to Support Task Diversity. *Computer Graphics Forum*, 42(3), 409-421.
+
+### Dataset
+Wang, Y., Mishra, S., Alipoormolabashi, P., Kordi, Y., Mirzaei, A., et al. (2022). Super-NaturalInstructions: Generalization via Declarative Instructions on 1600+ NLP Tasks. *EMNLP 2022*.
+
+### Libraries & Tools
+- D3.js Documentation: https://d3js.org/
+- Flask Documentation: https://flask.palletsprojects.com/
+- Sentence-Transformers: https://www.sbert.net/
+- scikit-learn: https://scikit-learn.org/
