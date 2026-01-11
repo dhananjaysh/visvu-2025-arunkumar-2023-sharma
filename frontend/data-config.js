@@ -1,8 +1,5 @@
 // Google Drive Data Configuration for LINGO with CORS Proxy
 const DATA_CONFIG = {
-    // CORS proxy to bypass Google Drive restrictions
-    CORS_PROXY: 'https://corsproxy.io/?',
-    
     // Direct download URLs for all data files
     GOOGLE_DRIVE_FILES: {
         categories: 'https://www.dropbox.com/scl/fi/8rmf4iyavnc4t3lj1p4xs/categories.json?rlkey=pgopwy3j5bcseoyxcs1x34sh8&st=vf9vd21s&dl=1',
@@ -15,13 +12,10 @@ const DATA_CONFIG = {
         tasks_basic: 'https://www.dropbox.com/scl/fi/l00xa97ov1x2mj9vz4iha/tasks_basic.json?rlkey=p0vrh7gr8t3fvs5f3yhv7tcff&st=5nxne0h4&dl=1'
     },
     
-    // Cache settings
     CACHE_PREFIX: 'lingo_data_v1_',
-    CACHE_VERSION: '1.0',
     USE_CACHE: true
 };
 
-// Data loader with caching and progress tracking
 async function loadDataFromDrive(fileKey, showProgress = true) {
     const cacheKey = DATA_CONFIG.CACHE_PREFIX + fileKey;
     
@@ -38,15 +32,10 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
         }
     }
     
-    // Download from Google Drive via CORS proxy
-    const driveUrl = DATA_CONFIG.GOOGLE_DRIVE_FILES[fileKey];
-    if (!driveUrl) {
-        throw new Error(`No URL configured for: ${fileKey}`);
-    }
+    // Download directly from Dropbox (NO CORS PROXY)
+    const url = DATA_CONFIG.GOOGLE_DRIVE_FILES[fileKey];
     
-    const url = DATA_CONFIG.CORS_PROXY + encodeURIComponent(driveUrl);
-    
-    console.log(`⬇ Downloading ${fileKey} from Google Drive...`);
+    console.log(`⬇ Downloading ${fileKey}...`);
     if (showProgress) {
         updateLoadingProgress(`Downloading ${fileKey}...`);
     }
@@ -57,13 +46,6 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        // Get file size for progress
-        const contentLength = response.headers.get('content-length');
-        if (contentLength && showProgress) {
-            const total = parseInt(contentLength, 10);
-            console.log(`File size: ${(total / 1024 / 1024).toFixed(2)} MB`);
-        }
-        
         const data = await response.json();
         console.log(`✓ Downloaded ${fileKey}`);
         
@@ -71,22 +53,16 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
         if (DATA_CONFIG.USE_CACHE) {
             try {
                 localStorage.setItem(cacheKey, JSON.stringify(data));
-                console.log(`✓ Cached ${fileKey}`);
             } catch (e) {
-                console.warn(`Cache storage full, couldn't cache ${fileKey}:`, e.message);
-                // If localStorage is full, try to clear old cache
-                if (e.name === 'QuotaExceededError') {
-                    console.log('Attempting to clear old cache...');
-                    clearOldCache();
-                }
+                console.warn(`Cache full: ${e.message}`);
             }
         }
         
         return data;
         
     } catch (error) {
-        console.error(`Error loading ${fileKey}:`, error);
-        throw new Error(`Failed to load ${fileKey}: ${error.message}`);
+        console.error(`❌ Error loading ${fileKey}:`, error);
+        throw error;
     }
 }
 
