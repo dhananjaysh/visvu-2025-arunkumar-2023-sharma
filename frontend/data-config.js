@@ -2,14 +2,14 @@
 const DATA_CONFIG = {
     // Direct download URLs for all data files from Dropbox
     GOOGLE_DRIVE_FILES: {
-        categories: 'https://www.dropbox.com/scl/fi/8rmf4iyavnc4t3lj1p4xs/categories.json?rlkey=pgopwy3j5bcseoyxcs1x34sh8&st=vf9vd21s&dl=1',
-        coords_3d: 'https://www.dropbox.com/scl/fi/ntr5pjhtp4vfwmrmx2e18/coords_3d.json?rlkey=2strs2gclrhuk0if77lzywnff&st=zfpxsjeo&dl=1',
-        embeddings: 'https://www.dropbox.com/scl/fi/9e2ep42wby2lwc0xbmdjq/embeddings.json?rlkey=o7u6zqlpfvc2v6qgytjzrt04x&st=iqes2hq5&dl=1',
-        model_results: 'https://www.dropbox.com/scl/fi/trah6h7iomjefldnpzpu3/model_results.json?rlkey=2ffiy88j0tn0co9vbac2jn890&st=6zt3k4ms&dl=1',
-        similarities: 'https://www.dropbox.com/scl/fi/9zd95ps6mx1azfn0k3ahv/similarities.json?rlkey=1bmpkew8x7s1tboluwfx8mph6&st=ev1maoei&dl=1',
-        summary: 'https://www.dropbox.com/scl/fi/mhfxzk80owxpszecwiqo8/summary.json?rlkey=kht2o8tonjt4h1wztmc8a20kw&st=6i5m6mou&dl=1',
-        task_metrics: 'https://www.dropbox.com/scl/fi/rtjfry9kgfdi7lxrmy2pu/task_metrics.json?rlkey=dsif3ox9pxp51lpjvvc7g5ek5&st=3yifyjxz&dl=1',
-        tasks_basic: 'https://www.dropbox.com/scl/fi/l00xa97ov1x2mj9vz4iha/tasks_basic.json?rlkey=p0vrh7gr8t3fvs5f3yhv7tcff&st=5nxne0h4&dl=1'
+        categories: 'https://www.dropbox.com/scl/fi/8rmf4iyavnc4t3lj1p4xs/categories.json?rlkey=pgopwy3j5bcseoyxcs1x34sh8&st=vf9vd21s&raw=1',
+        coords_3d: 'https://www.dropbox.com/scl/fi/ntr5pjhtp4vfwmrmx2e18/coords_3d.json?rlkey=2strs2gclrhuk0if77lzywnff&st=zfpxsjeo&raw=1',
+        embeddings: 'https://www.dropbox.com/scl/fi/9e2ep42wby2lwc0xbmdjq/embeddings.json?rlkey=o7u6zqlpfvc2v6qgytjzrt04x&st=iqes2hq5&raw=1',
+        model_results: 'https://www.dropbox.com/scl/fi/trah6h7iomjefldnpzpu3/model_results.json?rlkey=2ffiy88j0tn0co9vbac2jn890&st=6zt3k4ms&raw=1',
+        similarities: 'https://www.dropbox.com/scl/fi/9zd95ps6mx1azfn0k3ahv/similarities.json?rlkey=1bmpkew8x7s1tboluwfx8mph6&st=ev1maoei&raw=1',
+        summary: 'https://www.dropbox.com/scl/fi/mhfxzk80owxpszecwiqo8/summary.json?rlkey=kht2o8tonjt4h1wztmc8a20kw&st=6i5m6mou&raw=1',
+        task_metrics: 'https://www.dropbox.com/scl/fi/rtjfry9kgfdi7lxrmy2pu/task_metrics.json?rlkey=dsif3ox9pxp51lpjvvc7g5ek5&st=3yifyjxz&raw=1',
+        tasks_basic: 'https://www.dropbox.com/scl/fi/l00xa97ov1x2mj9vz4iha/tasks_basic.json?rlkey=p0vrh7gr8t3fvs5f3yhv7tcff&st=5nxne0h4&raw=1'
     },
     
     // Cache settings
