@@ -1,6 +1,6 @@
-// Google Drive Data Configuration for LINGO with CORS Proxy
+// Dropbox Data Configuration for LINGO
 const DATA_CONFIG = {
-    // Direct download URLs for all data files
+    // Direct download URLs for all data files from Dropbox
     GOOGLE_DRIVE_FILES: {
         categories: 'https://www.dropbox.com/scl/fi/8rmf4iyavnc4t3lj1p4xs/categories.json?rlkey=pgopwy3j5bcseoyxcs1x34sh8&st=vf9vd21s&dl=1',
         coords_3d: 'https://www.dropbox.com/scl/fi/ntr5pjhtp4vfwmrmx2e18/coords_3d.json?rlkey=2strs2gclrhuk0if77lzywnff&st=zfpxsjeo&dl=1',
@@ -12,10 +12,13 @@ const DATA_CONFIG = {
         tasks_basic: 'https://www.dropbox.com/scl/fi/l00xa97ov1x2mj9vz4iha/tasks_basic.json?rlkey=p0vrh7gr8t3fvs5f3yhv7tcff&st=5nxne0h4&dl=1'
     },
     
+    // Cache settings
     CACHE_PREFIX: 'lingo_data_v1_',
+    CACHE_VERSION: '1.0',
     USE_CACHE: true
 };
 
+// Data loader with caching and progress tracking
 async function loadDataFromDrive(fileKey, showProgress = true) {
     const cacheKey = DATA_CONFIG.CACHE_PREFIX + fileKey;
     
@@ -32,8 +35,12 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
         }
     }
     
-    // Download directly from Dropbox (NO CORS PROXY)
+    // Download directly from Dropbox - NO CORS PROXY
     const url = DATA_CONFIG.GOOGLE_DRIVE_FILES[fileKey];
+    
+    if (!url) {
+        throw new Error(`No URL configured for: ${fileKey}`);
+    }
     
     console.log(`⬇ Downloading ${fileKey}...`);
     if (showProgress) {
@@ -53,8 +60,13 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
         if (DATA_CONFIG.USE_CACHE) {
             try {
                 localStorage.setItem(cacheKey, JSON.stringify(data));
+                console.log(`✓ Cached ${fileKey}`);
             } catch (e) {
-                console.warn(`Cache full: ${e.message}`);
+                console.warn(`Cache storage full, couldn't cache ${fileKey}:`, e.message);
+                if (e.name === 'QuotaExceededError') {
+                    console.log('Attempting to clear old cache...');
+                    clearOldCache();
+                }
             }
         }
         
@@ -62,7 +74,7 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
         
     } catch (error) {
         console.error(`❌ Error loading ${fileKey}:`, error);
-        throw error;
+        throw new Error(`Failed to load ${fileKey}: ${error.message}`);
     }
 }
 
@@ -73,9 +85,8 @@ async function loadAllData() {
     try {
         showLoading('Initializing data loading...');
         
-        // Load files in parallel for speed
-        console.log('Loading all data files from Google Drive...');
-        console.log('This may take 30-60 seconds on first load...');
+        console.log('📦 Loading all data files from Dropbox...');
+        console.log('⏱ This may take 30-60 seconds on first load...');
         
         const [
             tasks,
@@ -98,8 +109,8 @@ async function loadAllData() {
         ]);
         
         const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-        console.log(`All data loaded successfully in ${elapsed}s`);
-        console.log(`Loaded ${tasks.length} tasks`);
+        console.log(`✅ All data loaded successfully in ${elapsed}s`);
+        console.log(`✅ Loaded ${tasks.length} tasks`);
         
         hideLoading();
         
@@ -116,8 +127,8 @@ async function loadAllData() {
         
     } catch (error) {
         hideLoading();
-        console.error('Failed to load data:', error);
-        showError('Failed to load data from Google Drive. Please check your internet connection and try again.');
+        console.error('❌ Failed to load data:', error);
+        showError('Failed to load data from Dropbox. Please check your internet connection and try again.');
         throw error;
     }
 }
@@ -171,7 +182,7 @@ function clearDataCache() {
             count++;
         }
     });
-    console.log(`Cleared ${count} cached files`);
+    console.log(`✓ Cleared ${count} cached files`);
     alert(`Cache cleared! (${count} files removed)\nRefresh the page to reload data.`);
 }
 
@@ -179,14 +190,13 @@ function clearDataCache() {
 function clearOldCache() {
     let count = 0;
     Object.keys(localStorage).forEach(key => {
-        // Remove old versions or non-matching cache
         if (key.startsWith('lingo_') && !key.startsWith(DATA_CONFIG.CACHE_PREFIX)) {
             localStorage.removeItem(key);
             count++;
         }
     });
     if (count > 0) {
-        console.log(`Cleared ${count} old cached files`);
+        console.log(`✓ Cleared ${count} old cached files`);
     }
 }
 
