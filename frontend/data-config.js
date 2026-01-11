@@ -1,41 +1,25 @@
-// Dropbox Data Configuration for LINGO - Using CDN URLs
+// Google Drive Data Configuration for LINGO
 const DATA_CONFIG = {
-    // Dropbox content delivery URLs (NO CORS restrictions)
+    // Google Drive direct download URLs (using export=download)
     GOOGLE_DRIVE_FILES: {
-        categories: 'https://dl.dropboxusercontent.com/scl/fi/8rmf4iyavnc4t3lj1p4xs/categories.json?rlkey=pgopwy3j5bcseoyxcs1x34sh8',
-        coords_3d: 'https://dl.dropboxusercontent.com/scl/fi/ntr5pjhtp4vfwmrmx2e18/coords_3d.json?rlkey=2strs2gclrhuk0if77lzywnff',
-        embeddings: 'https://dl.dropboxusercontent.com/scl/fi/9e2ep42wby2lwc0xbmdjq/embeddings.json?rlkey=o7u6zqlpfvc2v6qgytjzrt04x',
-        model_results: 'https://dl.dropboxusercontent.com/scl/fi/trah6h7iomjefldnpzpu3/model_results.json?rlkey=2ffiy88j0tn0co9vbac2jn890',
-        similarities: 'https://dl.dropboxusercontent.com/scl/fi/9zd95ps6mx1azfn0k3ahv/similarities.json?rlkey=1bmpkew8x7s1tboluwfx8mph6',
-        summary: 'https://dl.dropboxusercontent.com/scl/fi/mhfxzk80owxpszecwiqo8/summary.json?rlkey=kht2o8tonjt4h1wztmc8a20kw',
-        task_metrics: 'https://dl.dropboxusercontent.com/scl/fi/rtjfry9kgfdi7lxrmy2pu/task_metrics.json?rlkey=dsif3ox9pxp51lpjvvc7g5ek5',
-        tasks_basic: 'https://dl.dropboxusercontent.com/scl/fi/l00xa97ov1x2mj9vz4iha/tasks_basic.json?rlkey=p0vrh7gr8t3fvs5f3yhv7tcff'
+        categories: 'https://drive.google.com/uc?export=download&id=YOUR_CATEGORIES_FILE_ID',
+        coords_3d: 'https://drive.google.com/uc?export=download&id=YOUR_COORDS_FILE_ID',
+        embeddings: 'https://drive.google.com/uc?export=download&id=YOUR_EMBEDDINGS_FILE_ID',
+        model_results: 'https://drive.google.com/uc?export=download&id=YOUR_MODEL_RESULTS_FILE_ID',
+        similarities: 'https://drive.google.com/uc?export=download&id=YOUR_SIMILARITIES_FILE_ID',
+        summary: 'https://drive.google.com/uc?export=download&id=YOUR_SUMMARY_FILE_ID',
+        task_metrics: 'https://drive.google.com/uc?export=download&id=YOUR_TASK_METRICS_FILE_ID',
+        tasks_basic: 'https://drive.google.com/uc?export=download&id=YOUR_TASKS_BASIC_FILE_ID'
     },
     
-    // Cache settings
-    CACHE_PREFIX: 'lingo_data_v2_',  // Changed version to force reload
-    CACHE_VERSION: '2.0',
-    USE_CACHE: false
+    // Cache settings - disabled for large datasets
+    CACHE_PREFIX: 'lingo_data_v3_',
+    CACHE_VERSION: '3.0',
+    USE_CACHE: false  // Disabled due to 800MB dataset size
 };
 
-// Data loader with caching and progress tracking
+// Data loader with progress tracking
 async function loadDataFromDrive(fileKey, showProgress = true) {
-    const cacheKey = DATA_CONFIG.CACHE_PREFIX + fileKey;
-    
-    // Check cache first
-    if (DATA_CONFIG.USE_CACHE) {
-        try {
-            const cached = localStorage.getItem(cacheKey);
-            if (cached) {
-                console.log(`✓ Loaded ${fileKey} from cache`);
-                return JSON.parse(cached);
-            }
-        } catch (e) {
-            console.warn(`Cache read error for ${fileKey}:`, e);
-        }
-    }
-    
-    // Download directly from Dropbox CDN
     const url = DATA_CONFIG.GOOGLE_DRIVE_FILES[fileKey];
     
     if (!url) {
@@ -56,20 +40,6 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
         const data = await response.json();
         console.log(`✓ Downloaded ${fileKey}`);
         
-        // Cache it
-        if (DATA_CONFIG.USE_CACHE) {
-            try {
-                localStorage.setItem(cacheKey, JSON.stringify(data));
-                console.log(`✓ Cached ${fileKey}`);
-            } catch (e) {
-                console.warn(`Cache storage full, couldn't cache ${fileKey}:`, e.message);
-                if (e.name === 'QuotaExceededError') {
-                    console.log('Attempting to clear old cache...');
-                    clearOldCache();
-                }
-            }
-        }
-        
         return data;
         
     } catch (error) {
@@ -85,7 +55,7 @@ async function loadAllData() {
     try {
         showLoading('Initializing data loading...');
         
-        console.log('📦 Loading all data files from Dropbox CDN...');
+        console.log('📦 Loading all data files from Google Drive...');
         console.log('⏱ This may take 30-60 seconds on first load...');
         
         const [
@@ -128,7 +98,7 @@ async function loadAllData() {
     } catch (error) {
         hideLoading();
         console.error('❌ Failed to load data:', error);
-        showError('Failed to load data from Dropbox. Please check your internet connection and try again.');
+        showError('Failed to load data from Google Drive. Please check your internet connection and try again.');
         throw error;
     }
 }
@@ -173,33 +143,5 @@ function showError(message) {
     alert(message);
 }
 
-// Clear all cache
-function clearDataCache() {
-    let count = 0;
-    Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(DATA_CONFIG.CACHE_PREFIX) || key.startsWith('lingo_data')) {
-            localStorage.removeItem(key);
-            count++;
-        }
-    });
-    console.log(`✓ Cleared ${count} cached files`);
-    alert(`Cache cleared! (${count} files removed)\nRefresh the page to reload data.`);
-}
-
-// Clear old cache (keep only current version)
-function clearOldCache() {
-    let count = 0;
-    Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('lingo_') && !key.startsWith(DATA_CONFIG.CACHE_PREFIX)) {
-            localStorage.removeItem(key);
-            count++;
-        }
-    });
-    if (count > 0) {
-        console.log(`✓ Cleared ${count} old cached files`);
-    }
-}
-
 // Expose to global scope for debugging
-window.clearDataCache = clearDataCache;
 window.DATA_CONFIG = DATA_CONFIG;
