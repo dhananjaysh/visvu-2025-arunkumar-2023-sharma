@@ -1,20 +1,20 @@
-// Dropbox Data Configuration for LINGO
+// Dropbox Data Configuration for LINGO - Using CDN URLs
 const DATA_CONFIG = {
-    // Direct download URLs for all data files from Dropbox
+    // Dropbox content delivery URLs (NO CORS restrictions)
     GOOGLE_DRIVE_FILES: {
-        categories: 'https://www.dropbox.com/scl/fi/8rmf4iyavnc4t3lj1p4xs/categories.json?rlkey=pgopwy3j5bcseoyxcs1x34sh8&st=vf9vd21s',
-        coords_3d: 'https://www.dropbox.com/scl/fi/ntr5pjhtp4vfwmrmx2e18/coords_3d.json?rlkey=2strs2gclrhuk0if77lzywnff&st=zfpxsjeo',
-        embeddings: 'https://www.dropbox.com/scl/fi/9e2ep42wby2lwc0xbmdjq/embeddings.json?rlkey=o7u6zqlpfvc2v6qgytjzrt04x&st=iqes2hq5',
-        model_results: 'https://www.dropbox.com/scl/fi/trah6h7iomjefldnpzpu3/model_results.json?rlkey=2ffiy88j0tn0co9vbac2jn890&st=6zt3k4ms',
-        similarities: 'https://www.dropbox.com/scl/fi/9zd95ps6mx1azfn0k3ahv/similarities.json?rlkey=1bmpkew8x7s1tboluwfx8mph6&st=ev1maoei',
-        summary: 'https://www.dropbox.com/scl/fi/mhfxzk80owxpszecwiqo8/summary.json?rlkey=kht2o8tonjt4h1wztmc8a20kw&st=6i5m6mou',
-        task_metrics: 'https://www.dropbox.com/scl/fi/rtjfry9kgfdi7lxrmy2pu/task_metrics.json?rlkey=dsif3ox9pxp51lpjvvc7g5ek5&st=3yifyjxz',
-        tasks_basic: 'https://www.dropbox.com/scl/fi/l00xa97ov1x2mj9vz4iha/tasks_basic.json?rlkey=p0vrh7gr8t3fvs5f3yhv7tcff&st=5nxne0h4'
+        categories: 'https://dl.dropboxusercontent.com/scl/fi/8rmf4iyavnc4t3lj1p4xs/categories.json?rlkey=pgopwy3j5bcseoyxcs1x34sh8',
+        coords_3d: 'https://dl.dropboxusercontent.com/scl/fi/ntr5pjhtp4vfwmrmx2e18/coords_3d.json?rlkey=2strs2gclrhuk0if77lzywnff',
+        embeddings: 'https://dl.dropboxusercontent.com/scl/fi/9e2ep42wby2lwc0xbmdjq/embeddings.json?rlkey=o7u6zqlpfvc2v6qgytjzrt04x',
+        model_results: 'https://dl.dropboxusercontent.com/scl/fi/trah6h7iomjefldnpzpu3/model_results.json?rlkey=2ffiy88j0tn0co9vbac2jn890',
+        similarities: 'https://dl.dropboxusercontent.com/scl/fi/9zd95ps6mx1azfn0k3ahv/similarities.json?rlkey=1bmpkew8x7s1tboluwfx8mph6',
+        summary: 'https://dl.dropboxusercontent.com/scl/fi/mhfxzk80owxpszecwiqo8/summary.json?rlkey=kht2o8tonjt4h1wztmc8a20kw',
+        task_metrics: 'https://dl.dropboxusercontent.com/scl/fi/rtjfry9kgfdi7lxrmy2pu/task_metrics.json?rlkey=dsif3ox9pxp51lpjvvc7g5ek5',
+        tasks_basic: 'https://dl.dropboxusercontent.com/scl/fi/l00xa97ov1x2mj9vz4iha/tasks_basic.json?rlkey=p0vrh7gr8t3fvs5f3yhv7tcff'
     },
     
     // Cache settings
-    CACHE_PREFIX: 'lingo_data_v1_',
-    CACHE_VERSION: '1.0',
+    CACHE_PREFIX: 'lingo_data_v2_',  // Changed version to force reload
+    CACHE_VERSION: '2.0',
     USE_CACHE: true
 };
 
@@ -35,7 +35,7 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
         }
     }
     
-    // Download directly from Dropbox - NO CORS PROXY
+    // Download directly from Dropbox CDN
     const url = DATA_CONFIG.GOOGLE_DRIVE_FILES[fileKey];
     
     if (!url) {
@@ -85,7 +85,7 @@ async function loadAllData() {
     try {
         showLoading('Initializing data loading...');
         
-        console.log('📦 Loading all data files from Dropbox...');
+        console.log('📦 Loading all data files from Dropbox CDN...');
         console.log('⏱ This may take 30-60 seconds on first load...');
         
         const [
@@ -177,7 +177,7 @@ function showError(message) {
 function clearDataCache() {
     let count = 0;
     Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(DATA_CONFIG.CACHE_PREFIX)) {
+        if (key.startsWith(DATA_CONFIG.CACHE_PREFIX) || key.startsWith('lingo_data')) {
             localStorage.removeItem(key);
             count++;
         }
