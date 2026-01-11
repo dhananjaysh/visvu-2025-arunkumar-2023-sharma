@@ -1,5 +1,8 @@
-// Google Drive Data Configuration for LINGO
+// Google Drive Data Configuration for LINGO with CORS Proxy
 const DATA_CONFIG = {
+    // CORS proxy to bypass Google Drive restrictions
+    CORS_PROXY: 'https://corsproxy.io/?',
+    
     // Direct download URLs for all data files
     GOOGLE_DRIVE_FILES: {
         categories: 'https://drive.google.com/uc?export=download&id=1GV0vMg4mYiW55ZKJhsT7yj89-LVntsmJ',
@@ -35,11 +38,13 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
         }
     }
     
-    // Download from Google Drive
-    const url = DATA_CONFIG.GOOGLE_DRIVE_FILES[fileKey];
-    if (!url) {
+    // Download from Google Drive via CORS proxy
+    const driveUrl = DATA_CONFIG.GOOGLE_DRIVE_FILES[fileKey];
+    if (!driveUrl) {
         throw new Error(`No URL configured for: ${fileKey}`);
     }
+    
+    const url = DATA_CONFIG.CORS_PROXY + encodeURIComponent(driveUrl);
     
     console.log(`⬇ Downloading ${fileKey} from Google Drive...`);
     if (showProgress) {
@@ -60,13 +65,13 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
         }
         
         const data = await response.json();
-        console.log(`Downloaded ${fileKey}`);
+        console.log(`✓ Downloaded ${fileKey}`);
         
         // Cache it
         if (DATA_CONFIG.USE_CACHE) {
             try {
                 localStorage.setItem(cacheKey, JSON.stringify(data));
-                console.log(`✓Cached ${fileKey}`);
+                console.log(`✓ Cached ${fileKey}`);
             } catch (e) {
                 console.warn(`Cache storage full, couldn't cache ${fileKey}:`, e.message);
                 // If localStorage is full, try to clear old cache
@@ -80,7 +85,7 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
         return data;
         
     } catch (error) {
-        console.error(`Error loading ${fileKey}:`, error);
+        console.error(`❌ Error loading ${fileKey}:`, error);
         throw new Error(`Failed to load ${fileKey}: ${error.message}`);
     }
 }
@@ -117,8 +122,8 @@ async function loadAllData() {
         ]);
         
         const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-        console.log(`All data loaded successfully in ${elapsed}s`);
-        console.log(`Loaded ${tasks.length} tasks`);
+        console.log(`✅ All data loaded successfully in ${elapsed}s`);
+        console.log(`✅ Loaded ${tasks.length} tasks`);
         
         hideLoading();
         
@@ -135,7 +140,7 @@ async function loadAllData() {
         
     } catch (error) {
         hideLoading();
-        console.error('Failed to load data:', error);
+        console.error('❌ Failed to load data:', error);
         showError('Failed to load data from Google Drive. Please check your internet connection and try again.');
         throw error;
     }
