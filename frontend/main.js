@@ -1,26 +1,8 @@
 /**
- * LINGO Main Application
+ * LINGO Main Application - Githib page
  * Handles initialization, data loading, and coordination between panels
  */
 
-// Global state object
-const STATE = {
-    tasks: [],
-    allTasks: [],
-    selectedTask: null,
-    selectedTaskId: null,
-    similarTasks: [],
-    coords3d: [],
-    embeddings: [],
-    similarities: {},
-    modelResults: {},
-    taskMetrics: {},
-    threshold: 0.7,
-    chordThreshold: 0.6,
-    colorBy: 'category',
-    activeTab: 'definition',
-    pairwiseSimilarities: null
-};
 
 /**
  * Initialize the application
