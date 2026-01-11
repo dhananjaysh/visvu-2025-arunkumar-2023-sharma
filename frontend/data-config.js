@@ -15,7 +15,7 @@ const DATA_CONFIG = {
     // Cache settings
     CACHE_PREFIX: 'lingo_data_v2_',  // Changed version to force reload
     CACHE_VERSION: '2.0',
-    USE_CACHE: true
+    USE_CACHE: false
 };
 
 // Data loader with caching and progress tracking
