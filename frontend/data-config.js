@@ -1,7 +1,7 @@
 // Google Drive API Configuration for LINGO
 const DATA_CONFIG = {
     // Google Drive API Key
-    API_KEY: 'AIzaSyArW_1ILBItS7eziufDq3RPtee0wIFvE1A',
+    
     
     // Google Drive File IDs
     GOOGLE_DRIVE_FILES: {
