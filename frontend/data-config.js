@@ -1,30 +1,31 @@
-// Google Drive Data Configuration for LINGO
+// Google Drive API Configuration for LINGO
 const DATA_CONFIG = {
-    // Google Drive direct download URLs (using export=download)
+    // Google Drive API Key
+    API_KEY: 'AIzaSyArW_1ILBItS7eziufDq3RPtee0wIFvE1A',
+    
+    // Google Drive File IDs
     GOOGLE_DRIVE_FILES: {
-        categories: 'https://drive.google.com/uc?export=download&id=YOUR_CATEGORIES_FILE_ID',
-        coords_3d: 'https://drive.google.com/uc?export=download&id=YOUR_COORDS_FILE_ID',
-        embeddings: 'https://drive.google.com/uc?export=download&id=YOUR_EMBEDDINGS_FILE_ID',
-        model_results: 'https://drive.google.com/uc?export=download&id=YOUR_MODEL_RESULTS_FILE_ID',
-        similarities: 'https://drive.google.com/uc?export=download&id=YOUR_SIMILARITIES_FILE_ID',
-        summary: 'https://drive.google.com/uc?export=download&id=YOUR_SUMMARY_FILE_ID',
-        task_metrics: 'https://drive.google.com/uc?export=download&id=YOUR_TASK_METRICS_FILE_ID',
-        tasks_basic: 'https://drive.google.com/uc?export=download&id=YOUR_TASKS_BASIC_FILE_ID'
+        categories: '1GV0vMg4mYiW55ZKJhsT7yj89-LVntsmJ',
+        coords_3d: '1pLdhssolTh3Z5DG_W7bSlRH2WVlLKjYM',
+        embeddings: '1pETfbh5yvBnTpNRaAQx4ObJc-fbfLL2H',
+        model_results: '1LWZT0luDwfqiPXNKPnvi73o6-QRjdPM3',
+        similarities: '1qnKOezsuBaEQ0_lbV7sV-Oid5E-mhO7n',
+        summary: '1IQv-_aMNwV-NQA-xJ-zDdt_KV8CDlkLC',
+        task_metrics: '1AwxEqlCek297U0NbYkfwbiqqjs-kV3Xw',
+        tasks_basic: '1DI0muRF4o30uv7vcVSXRtHHcrn8u6iN5'
     },
     
-    // Cache settings - disabled for large datasets
-    CACHE_PREFIX: 'lingo_data_v3_',
-    CACHE_VERSION: '3.0',
-    USE_CACHE: false  // Disabled due to 800MB dataset size
+    // Cache disabled for 800MB dataset
+    USE_CACHE: false
 };
 
-// Data loader with progress tracking
+// Load data from Google Drive using API
 async function loadDataFromDrive(fileKey, showProgress = true) {
-    const url = DATA_CONFIG.GOOGLE_DRIVE_FILES[fileKey];
+    const fileId = DATA_CONFIG.GOOGLE_DRIVE_FILES[fileKey];
+    const apiKey = DATA_CONFIG.API_KEY;
     
-    if (!url) {
-        throw new Error(`No URL configured for: ${fileKey}`);
-    }
+    // Google Drive API endpoint for file download
+    const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${apiKey}`;
     
     console.log(`⬇ Downloading ${fileKey}...`);
     if (showProgress) {
@@ -33,6 +34,7 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
     
     try {
         const response = await fetch(url);
+        
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
@@ -43,20 +45,20 @@ async function loadDataFromDrive(fileKey, showProgress = true) {
         return data;
         
     } catch (error) {
-        console.error(`Error loading ${fileKey}:`, error);
+        console.error(`❌ Error loading ${fileKey}:`, error);
         throw new Error(`Failed to load ${fileKey}: ${error.message}`);
     }
 }
 
-// Load all required data files
+// Load all required data files in parallel
 async function loadAllData() {
     const startTime = Date.now();
     
     try {
-        showLoading('Initializing data loading...');
+        showLoading('Initializing LINGO Dashboard...');
         
-        console.log('Loading all data files from Google Drive...');
-        console.log('This may take 30-60 seconds on first load...');
+        console.log('📦 Loading all data files from Google Drive...');
+        console.log('⏱ This may take 30-60 seconds on first load (800MB dataset)...');
         
         const [
             tasks,
@@ -79,8 +81,8 @@ async function loadAllData() {
         ]);
         
         const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-        console.log(`All data loaded successfully in ${elapsed}s`);
-        console.log(`Loaded ${tasks.length} tasks`);
+        console.log(`✅ All data loaded successfully in ${elapsed}s`);
+        console.log(`✅ Loaded ${tasks.length} tasks`);
         
         hideLoading();
         
@@ -97,7 +99,7 @@ async function loadAllData() {
         
     } catch (error) {
         hideLoading();
-        console.error('Failed to load data:', error);
+        console.error('❌ Failed to load data:', error);
         showError('Failed to load data from Google Drive. Please check your internet connection and try again.');
         throw error;
     }
@@ -145,3 +147,4 @@ function showError(message) {
 
 // Expose to global scope for debugging
 window.DATA_CONFIG = DATA_CONFIG;
+window.loadAllData = loadAllData;
